@@ -1,6 +1,7 @@
 package com.example.crypto_app.ui.component
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -8,9 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 
 @Composable
 fun CoinTile(
@@ -18,7 +19,7 @@ fun CoinTile(
     name: String,
     price: String,
     change24h: Double,
-    icon: String = "🪙"
+    imageUrl: String = ""
 ) {
     val changeColor = if (change24h >= 0) Color(0xFF00C853) else Color(0xFFD32F2F)
     val changeText = if (change24h >= 0) "+${"%.2f".format(change24h)}%" else "${"%.2f".format(change24h)}%"
@@ -38,16 +39,14 @@ fun CoinTile(
             ) 
         },
         leadingContent = {
-            Box(
-                modifier = Modifier.size(40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = icon,
-                    fontSize = 32.sp,
-                    textAlign = TextAlign.Center
-                )
-            }
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "$symbol icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp),
+                contentScale = androidx.compose.ui.layout.ContentScale.Fit
+            )
         },
         trailingContent = {
             Column(
