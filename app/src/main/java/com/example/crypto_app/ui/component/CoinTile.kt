@@ -17,14 +17,12 @@ import com.example.crypto_app.data.model.CoinResponse
 
 @Composable
 fun CoinTile(
-    symbol: String,
-    name: String,
-    price: String,
-    change24h: Double,
-    imageUrl: String = "",
-    coin: CoinResponse? = null,
-    onCoinClick: ((CoinResponse) -> Unit)? = null
+    coin: CoinResponse,
+    onCoinClick: (CoinResponse) -> Unit
 ) {
+    val symbol = coin.symbol.uppercase()
+    val price = "$${coin.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}"
+    val change24h = coin.priceChange24h ?: 0.0
     val changeColor = if (change24h >= 0) Color(0xFF00C853) else Color(0xFFD32F2F)
     val changeText = if (change24h >= 0) "+${"%.2f".format(change24h)}%" else "${"%.2f".format(change24h)}%"
 
@@ -37,14 +35,14 @@ fun CoinTile(
         },
         supportingContent = { 
             Text(
-                text = name,
+                text = coin.name,
                 fontSize = 12.sp,
                 color = Color.Gray
             ) 
         },
         leadingContent = {
             AsyncImage(
-                model = imageUrl,
+                model = coin.image,
                 contentDescription = "$symbol icon",
                 modifier = Modifier
                     .size(40.dp)
@@ -74,9 +72,7 @@ fun CoinTile(
         modifier = Modifier
             .padding(horizontal = 8.dp)
             .clickable {
-                if (coin != null && onCoinClick != null) {
-                    onCoinClick(coin)
-                }
+                onCoinClick(coin)
             }
     )
 }

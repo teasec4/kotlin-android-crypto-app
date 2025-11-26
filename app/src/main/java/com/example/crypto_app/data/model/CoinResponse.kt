@@ -1,6 +1,7 @@
 package com.example.crypto_app.data.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class CoinResponse(
     val id: String,
@@ -13,4 +14,4 @@ data class CoinResponse(
     val priceChange24h: Double?,
     @SerializedName("market_cap_rank")
     val marketCapRank: Int?
-)
+) : Serializable

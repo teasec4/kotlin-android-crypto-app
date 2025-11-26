@@ -33,9 +33,7 @@ import com.example.crypto_app.ui.screens.PortfolioScreen
 import com.example.crypto_app.ui.screens.SettingsScreen
 import com.example.crypto_app.ui.screens.DetailViewCoin
 import com.example.crypto_app.ui.theme.CryptoappTheme
-import com.example.crypto_app.data.model.CoinResponse
-import com.google.gson.Gson
-import java.net.URLDecoder
+import com.example.crypto_app.navigation.Routes
 
 
 @ExperimentalMaterial3Api
@@ -73,22 +71,21 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home",
+                        startDestination = Routes.HOME,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("home") {
+                        composable(Routes.HOME) {
                             HomeScreen(navController)
                         }
-                        composable("portfolio") {
+                        composable(Routes.PORTFOLIO) {
                             PortfolioScreen()
                         }
-                        composable("settings") {
+                        composable(Routes.SETTINGS) {
                             SettingsScreen()
                         }
-                        composable("detail/{coinJson}") { backStackEntry ->
+                        composable(Routes.detailRoutePattern()) { backStackEntry ->
                             val encodedCoinJson = backStackEntry.arguments?.getString("coinJson")
-                            val coinJson = encodedCoinJson?.let { URLDecoder.decode(it, "UTF-8") }
-                            val coin = coinJson?.let { Gson().fromJson(it, CoinResponse::class.java) }
+                            val coin = Routes.parseCoinFromArgument(encodedCoinJson)
                             if (coin != null) {
                                 DetailViewCoin(coin)
                             }
@@ -108,8 +105,8 @@ fun BottomNavigation(navController: NavController) {
     ) {
         IconButton(
             onClick = {
-                navController.navigate("home") {
-                    popUpTo("home") { inclusive = true }
+                navController.navigate(Routes.HOME) {
+                    popUpTo(Routes.HOME) { inclusive = true }
                 }
             }
         ) {
@@ -117,8 +114,8 @@ fun BottomNavigation(navController: NavController) {
         }
         IconButton(
             onClick = {
-                navController.navigate("portfolio") {
-                    popUpTo("home")
+                navController.navigate(Routes.PORTFOLIO) {
+                    popUpTo(Routes.HOME)
                 }
             }
         ) {
@@ -126,8 +123,8 @@ fun BottomNavigation(navController: NavController) {
         }
         IconButton(
             onClick = {
-                navController.navigate("settings") {
-                    popUpTo("home")
+                navController.navigate(Routes.SETTINGS) {
+                    popUpTo(Routes.HOME)
                 }
             }
         ) {
@@ -139,11 +136,11 @@ fun BottomNavigation(navController: NavController) {
 @Composable
 fun getScreenTitle(navController: NavController): String {
     val navBackStackEntry = navController.currentBackStackEntryAsState().value
-    return when {
-        navBackStackEntry?.destination?.route == "home" -> "Home"
-        navBackStackEntry?.destination?.route == "portfolio" -> "Portfolio"
-        navBackStackEntry?.destination?.route == "settings" -> "Settings"
-        navBackStackEntry?.destination?.route?.startsWith("detail") == true -> "Coin Details"
+    return when (navBackStackEntry?.destination?.route) {
+        Routes.HOME -> "Home"
+        Routes.PORTFOLIO -> "Portfolio"
+        Routes.SETTINGS -> "Settings"
+        Routes.detailRoutePattern() -> "Coin Details"
         else -> "Crypto App"
     }
 }
