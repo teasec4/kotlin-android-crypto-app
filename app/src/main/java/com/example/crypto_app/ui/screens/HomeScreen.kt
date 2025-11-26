@@ -11,13 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.example.crypto_app.data.model.CoinResponse
 import com.example.crypto_app.di.ServiceLocator
 import com.example.crypto_app.ui.component.CoinTile
 import com.example.crypto_app.ui.viewmodel.HomeUiState
 import com.example.crypto_app.ui.viewmodel.HomeViewModel
+import com.google.gson.Gson
+import java.net.URLEncoder
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
     val viewModel: HomeViewModel = ServiceLocator.createHomeViewModel()
     
     val uiState = viewModel.uiState.collectAsState().value
@@ -41,7 +45,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         name = coin.name,
                         price = "$${coin.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}",
                         change24h = coin.priceChange24h ?: 0.0,
-                        imageUrl = coin.image
+                        imageUrl = coin.image,
+                        coin = coin,
+                        onCoinClick = { selectedCoin ->
+                            navController?.let {
+                                val coinJson = Gson().toJson(selectedCoin)
+                                val encodedJson = URLEncoder.encode(coinJson, "UTF-8")
+                                it.navigate("detail/$encodedJson")
+                            }
+                        }
                     )
                 }
             }

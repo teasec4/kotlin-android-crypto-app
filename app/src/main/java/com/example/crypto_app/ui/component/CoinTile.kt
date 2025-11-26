@@ -1,5 +1,6 @@
 package com.example.crypto_app.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ListItem
@@ -12,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.crypto_app.data.model.CoinResponse
 
 @Composable
 fun CoinTile(
@@ -19,7 +21,9 @@ fun CoinTile(
     name: String,
     price: String,
     change24h: Double,
-    imageUrl: String = ""
+    imageUrl: String = "",
+    coin: CoinResponse? = null,
+    onCoinClick: ((CoinResponse) -> Unit)? = null
 ) {
     val changeColor = if (change24h >= 0) Color(0xFF00C853) else Color(0xFFD32F2F)
     val changeText = if (change24h >= 0) "+${"%.2f".format(change24h)}%" else "${"%.2f".format(change24h)}%"
@@ -67,6 +71,12 @@ fun CoinTile(
                 )
             }
         },
-        modifier = Modifier.padding(horizontal = 8.dp)
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .clickable {
+                if (coin != null && onCoinClick != null) {
+                    onCoinClick(coin)
+                }
+            }
     )
 }

@@ -13,6 +13,6 @@ fun PortfolioScreen(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text("Portfolio Screen - В разработке")
+        Text("Portfolio")
     }
 }

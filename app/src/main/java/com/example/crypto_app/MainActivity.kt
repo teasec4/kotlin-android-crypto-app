@@ -17,12 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,7 +31,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.crypto_app.ui.screens.HomeScreen
 import com.example.crypto_app.ui.screens.PortfolioScreen
 import com.example.crypto_app.ui.screens.SettingsScreen
+import com.example.crypto_app.ui.screens.DetailViewCoin
 import com.example.crypto_app.ui.theme.CryptoappTheme
+import com.example.crypto_app.data.model.CoinResponse
+import com.google.gson.Gson
+import java.net.URLDecoder
 
 
 @ExperimentalMaterial3Api
@@ -49,6 +53,15 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(
                             title = { 
                                 Text(getScreenTitle(navController))
+                            },
+                            navigationIcon = {
+                                if (navController.currentBackStackEntryAsState().value?.destination?.route != "home" &&
+                                    navController.currentBackStackEntryAsState().value?.destination?.route != "portfolio" &&
+                                    navController.currentBackStackEntryAsState().value?.destination?.route != "settings") {
+                                    IconButton(onClick = { navController.popBackStack() }) {
+                                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                    }
+                                }
                             }
                         )
                     },
@@ -64,13 +77,21 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable("home") {
-                            HomeScreen()
+                            HomeScreen(navController)
                         }
                         composable("portfolio") {
                             PortfolioScreen()
                         }
                         composable("settings") {
                             SettingsScreen()
+                        }
+                        composable("detail/{coinJson}") { backStackEntry ->
+                            val encodedCoinJson = backStackEntry.arguments?.getString("coinJson")
+                            val coinJson = encodedCoinJson?.let { URLDecoder.decode(it, "UTF-8") }
+                            val coin = coinJson?.let { Gson().fromJson(it, CoinResponse::class.java) }
+                            if (coin != null) {
+                                DetailViewCoin(coin)
+                            }
                         }
                     }
                 }
@@ -118,10 +139,11 @@ fun BottomNavigation(navController: NavController) {
 @Composable
 fun getScreenTitle(navController: NavController): String {
     val navBackStackEntry = navController.currentBackStackEntryAsState().value
-    return when (navBackStackEntry?.destination?.route) {
-        "home" -> "Home"
-        "portfolio" -> "Portfolio"
-        "settings" -> "Settings"
+    return when {
+        navBackStackEntry?.destination?.route == "home" -> "Home"
+        navBackStackEntry?.destination?.route == "portfolio" -> "Portfolio"
+        navBackStackEntry?.destination?.route == "settings" -> "Settings"
+        navBackStackEntry?.destination?.route?.startsWith("detail") == true -> "Coin Details"
         else -> "Crypto App"
     }
 }
