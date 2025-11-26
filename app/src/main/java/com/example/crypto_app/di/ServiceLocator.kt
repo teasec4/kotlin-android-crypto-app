@@ -5,10 +5,16 @@ import com.example.crypto_app.data.repository.CoinRepository
 import com.example.crypto_app.data.repository.CoinRepositoryImpl
 import com.example.crypto_app.domain.usecase.GetCoinsUseCase
 import com.example.crypto_app.ui.viewmodel.HomeViewModel
+import kotlinx.serialization.json.Json
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ServiceLocator {
+    val json = Json { 
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
+    
     private val retrofit by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.coingecko.com/api/v3/")

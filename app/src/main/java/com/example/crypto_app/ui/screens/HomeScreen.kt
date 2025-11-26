@@ -13,8 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.crypto_app.data.model.CoinResponse
+import com.example.crypto_app.data.model.CoinUI
 import com.example.crypto_app.di.ServiceLocator
-import com.example.crypto_app.navigation.Routes
+import com.example.crypto_app.navigation.DetailRoute
 import com.example.crypto_app.ui.component.CoinTile
 import com.example.crypto_app.ui.viewmodel.HomeUiState
 import com.example.crypto_app.ui.viewmodel.HomeViewModel
@@ -42,7 +43,7 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                     CoinTile(
                         coin = coin,
                         onCoinClick = { selectedCoin ->
-                            navController?.navigate(Routes.detailRoute(selectedCoin))
+                            navController?.navigate(DetailRoute(selectedCoin.id, selectedCoin.name))
                         }
                     )
                 }
