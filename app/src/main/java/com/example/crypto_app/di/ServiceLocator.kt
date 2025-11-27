@@ -41,4 +41,14 @@ object ServiceLocator {
             homeViewModel = it
         }
     }
+    // long version of it
+    //fun createHomeViewModel(): HomeViewModel {
+    //    if (homeViewModel != null) {
+    //        return homeViewModel!!
+    //    }
+    //
+    //    val newVm = HomeViewModel(getCoinsUseCase)
+    //    homeViewModel = newVm
+    //    return newVm
+
 }
