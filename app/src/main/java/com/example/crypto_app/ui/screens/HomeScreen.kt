@@ -1,6 +1,7 @@
 package com.example.crypto_app.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,12 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.crypto_app.data.model.CoinResponse
+import com.example.crypto_app.data.PreferencesManager
 import com.example.crypto_app.di.ServiceLocator
 import com.example.crypto_app.ui.component.CoinTile
 import com.example.crypto_app.ui.viewmodel.HomeUiState
@@ -46,6 +49,11 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import com.example.crypto_app.ui.theme.Primary
 import com.example.crypto_app.ui.theme.Secondary
 import com.example.crypto_app.ui.theme.TextSecondary
+import com.example.crypto_app.ui.theme.SurfaceDark
+import com.example.crypto_app.ui.theme.SurfaceLight
+import com.example.crypto_app.ui.theme.TextPrimaryDark
+import com.example.crypto_app.ui.theme.TextPrimaryLight
+import com.example.crypto_app.ui.theme.TextSecondaryDark
 
 
 @ExperimentalMaterial3Api
@@ -55,6 +63,10 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
     val uiState = viewModel.uiState.collectAsState().value
     val selectedCoin = remember { mutableStateOf<CoinResponse?>(null) }
     val text = remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager(context)
+    val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
 
     val pullState = rememberPullToRefreshState()
 
@@ -114,11 +126,16 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
     if (selectedCoin.value != null) {
         val inputAmount = text.value.toDoubleOrNull() ?: 0.0
         val dollarValue = inputAmount * (selectedCoin.value?.currentPrice ?: 0.0)
+        val sheetBgColor = if (isDarkTheme) SurfaceDark else Color.White
+        val sheetTextPrimary = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
+        val sheetTextSecondary = if (isDarkTheme) TextSecondaryDark else Color.Gray
+        val textFieldBgColor = if (isDarkTheme) Color(0xFF2A2A2A) else Color.White
 
         ModalBottomSheet(
             onDismissRequest = { selectedCoin.value = null; text.value = "" },
             scrimColor = Color.Black.copy(alpha = 0.32f),
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            containerColor = sheetBgColor
         ) {
             Column(
                 modifier = Modifier
@@ -148,13 +165,14 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                         Text(
                             text = selectedCoin.value?.name ?: "",
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = sheetTextPrimary
                         )
 
                         Text(
                             text = "${selectedCoin.value?.symbol?.uppercase()} • $${selectedCoin.value?.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}",
                             fontSize = 13.sp,
-                            color = Color.Gray
+                            color = sheetTextSecondary
                         )
                     }
                 }
@@ -164,16 +182,16 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 16.dp)
-                        .background(Color.White, shape = RoundedCornerShape(12.dp)),
+                        .background(textFieldBgColor, shape = RoundedCornerShape(12.dp)),
                     value = text.value,
-                    placeholder = { Text("Enter amount", color = TextSecondary.copy(alpha = 0.5f)) },
+                    placeholder = { Text("Enter amount", color = sheetTextSecondary.copy(alpha = 0.5f)) },
                     onValueChange = { newValue ->
                         if (newValue.isEmpty() || newValue.toDoubleOrNull() != null) {
                             text.value = newValue
                         }
                     },
                     singleLine = true,
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = sheetTextPrimary)
                 )
 
                 // Conversion info - always visible, no layout shifts
@@ -192,7 +210,7 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                         Text(
                             text = "Enter amount to see conversion",
                             fontSize = 14.sp,
-                            color = TextSecondary.copy(alpha = 0.5f)
+                            color = sheetTextSecondary.copy(alpha = 0.5f)
                         )
                     } else {
                         Row(
@@ -203,7 +221,8 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                             Text(
                                 text = "${text.value} ${selectedCoin.value?.symbol?.uppercase()}",
                                 fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
+                                color = sheetTextPrimary
                             )
 
                             Text(

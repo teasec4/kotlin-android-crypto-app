@@ -13,6 +13,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -36,6 +37,10 @@ import com.example.crypto_app.ui.screens.DetailViewCoin
 import com.example.crypto_app.ui.theme.CryptoappTheme
 import com.example.crypto_app.ui.theme.BackgroundLight
 import com.example.crypto_app.ui.theme.BackgroundDark
+import com.example.crypto_app.ui.theme.SurfaceDark
+import com.example.crypto_app.ui.theme.SurfaceLight
+import com.example.crypto_app.ui.theme.TextPrimaryDark
+import com.example.crypto_app.ui.theme.TextPrimaryLight
 import com.example.crypto_app.navigation.HomeRoute
 import com.example.crypto_app.navigation.PortfolioRoute
 import com.example.crypto_app.navigation.SettingsRoute
@@ -59,6 +64,9 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val backgroundColor = if (isDarkTheme) BackgroundDark else BackgroundLight
                 
+                val topBarBgColor = if (isDarkTheme) SurfaceDark else SurfaceLight
+                val topBarTitleColor = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
+                
                 Scaffold(
                     modifier = Modifier
                         .fillMaxSize()
@@ -67,7 +75,7 @@ class MainActivity : ComponentActivity() {
                         val currentBackStackEntry = navController.currentBackStackEntryAsState().value
                         TopAppBar(
                             title = { 
-                                Text(getScreenTitle(navController))
+                                Text(getScreenTitle(navController), color = topBarTitleColor)
                             },
                             navigationIcon = {
                                 val currentRoute = currentBackStackEntry?.destination?.route
@@ -75,15 +83,19 @@ class MainActivity : ComponentActivity() {
                                     !currentRoute.startsWith("com.example.crypto_app.navigation.PortfolioRoute") &&
                                     !currentRoute.startsWith("com.example.crypto_app.navigation.SettingsRoute")) {
                                     IconButton(onClick = { navController.popBackStack() }) {
-                                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = topBarTitleColor)
                                     }
                                 }
-                            }
+                            },
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = topBarBgColor,
+                                titleContentColor = topBarTitleColor
+                            )
                         )
                     },
                     bottomBar = {
-                        BottomAppBar {
-                            BottomNavigation(navController)
+                        BottomAppBar(containerColor = topBarBgColor) {
+                            BottomNavigation(navController, topBarTitleColor)
                         }
                     }
                 ) { innerPadding ->
@@ -113,7 +125,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BottomNavigation(navController: NavController) {
+fun BottomNavigation(navController: NavController, tint: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Black) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -125,7 +137,7 @@ fun BottomNavigation(navController: NavController) {
                 }
             }
         ) {
-            Icon(Icons.Default.Home, contentDescription = "Home")
+            Icon(Icons.Default.Home, contentDescription = "Home", tint = tint)
         }
         IconButton(
             onClick = {
@@ -134,7 +146,7 @@ fun BottomNavigation(navController: NavController) {
                 }
             }
         ) {
-            Icon(Icons.Default.Favorite, contentDescription = "Portfolio")
+            Icon(Icons.Default.Favorite, contentDescription = "Portfolio", tint = tint)
         }
         IconButton(
             onClick = {
@@ -143,7 +155,7 @@ fun BottomNavigation(navController: NavController) {
                 }
             }
         ) {
-            Icon(Icons.Default.Settings, contentDescription = "Settings")
+            Icon(Icons.Default.Settings, contentDescription = "Settings", tint = tint)
         }
     }
 }
