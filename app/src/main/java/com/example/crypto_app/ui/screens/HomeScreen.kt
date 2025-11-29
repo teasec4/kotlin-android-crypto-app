@@ -22,6 +22,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +43,9 @@ import com.example.crypto_app.ui.viewmodel.HomeUiState
 import com.example.crypto_app.ui.viewmodel.HomeViewModel
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import com.example.crypto_app.ui.theme.Primary
+import com.example.crypto_app.ui.theme.Secondary
+import com.example.crypto_app.ui.theme.TextSecondary
 
 
 @ExperimentalMaterial3Api
@@ -73,14 +78,22 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
 
             is HomeUiState.Success -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 8.dp
+                    )
                 ) {
-                    items(uiState.coins) { coin ->
+                    items(
+                        uiState.coins,
+                        key = { it.id }
+                    ) { coin ->
                         CoinTile(
                             coin = coin,
                             onCoinClick = { clickedCoin ->
                                 selectedCoin.value = clickedCoin
-                            }
+                            },
+                            modifier = Modifier.padding(vertical = 6.dp)
                         )
                     }
                 }
@@ -99,9 +112,13 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
 
     // Bottom Sheet
     if (selectedCoin.value != null) {
+        val inputAmount = text.value.toDoubleOrNull() ?: 0.0
+        val dollarValue = inputAmount * (selectedCoin.value?.currentPrice ?: 0.0)
+
         ModalBottomSheet(
-            onDismissRequest = { selectedCoin.value = null },
-            scrimColor = Color.Black.copy(alpha = 0.32f)
+            onDismissRequest = { selectedCoin.value = null; text.value = "" },
+            scrimColor = Color.Black.copy(alpha = 0.32f),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -109,63 +126,116 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Coin info header - simple and clean
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    // Coin Image
                     AsyncImage(
                         model = selectedCoin.value?.image,
                         contentDescription = "${selectedCoin.value?.symbol} icon",
-                        modifier = Modifier.size(100.dp),
+                        modifier = Modifier.size(48.dp),
                         contentScale = androidx.compose.ui.layout.ContentScale.Fit
                     )
 
                     Column(
-                        modifier = Modifier,
-                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier.padding(start = 12.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        // Coin Name
                         Text(
                             text = selectedCoin.value?.name ?: "",
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(top = 20.dp)
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
                         )
 
-                        // Coin Symbol
                         Text(
-                            text = selectedCoin.value?.symbol?.uppercase() ?: "",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontWeight = FontWeight.SemiBold
+                            text = "${selectedCoin.value?.symbol?.uppercase()} • $${selectedCoin.value?.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}",
+                            fontSize = 13.sp,
+                            color = Color.Gray
                         )
                     }
-
-
-                    // Price
-                    Text(
-                        text = "$${selectedCoin.value?.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
                 }
 
+                // Input field with border
                 TextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .background(Color(0xFFF0F0F0), shape = RoundedCornerShape(8.dp)),
+                        .padding(bottom = 16.dp)
+                        .background(Color.White, shape = RoundedCornerShape(12.dp)),
                     value = text.value,
-                    label = {Text("Tap a value")},
-                    onValueChange = { text.value = it }
+                    placeholder = { Text("Enter amount", color = TextSecondary.copy(alpha = 0.5f)) },
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty() || newValue.toDoubleOrNull() != null) {
+                            text.value = newValue
+                        }
+                    },
+                    singleLine = true,
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp)
                 )
 
-                TextButton({}) {
-                    Text("Enter")
+                // Conversion info - always visible, no layout shifts
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
+                        .background(
+                            color = if (text.value.isNotEmpty()) Primary.copy(alpha = 0.08f) else Color.Transparent,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (text.value.isEmpty()) {
+                        Text(
+                            text = "Enter amount to see conversion",
+                            fontSize = 14.sp,
+                            color = TextSecondary.copy(alpha = 0.5f)
+                        )
+                    } else {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "${text.value} ${selectedCoin.value?.symbol?.uppercase()}",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Text(
+                                text = "→",
+                                fontSize = 16.sp,
+                                color = Primary,
+                                modifier = Modifier.padding(horizontal = 12.dp)
+                            )
+
+                            Text(
+                                text = "$${String.format("%.2f", dollarValue)}",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Secondary
+                            )
+                        }
+                    }
+                }
+
+                TextButton(
+                    onClick = { selectedCoin.value = null; text.value = "" },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Primary, shape = RoundedCornerShape(12.dp))
+                ) {
+                    Text(
+                        "Add to Portfolio",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
         }

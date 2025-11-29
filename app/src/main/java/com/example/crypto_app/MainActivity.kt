@@ -34,10 +34,16 @@ import com.example.crypto_app.ui.screens.PortfolioScreen
 import com.example.crypto_app.ui.screens.SettingsScreen
 import com.example.crypto_app.ui.screens.DetailViewCoin
 import com.example.crypto_app.ui.theme.CryptoappTheme
+import com.example.crypto_app.ui.theme.BackgroundLight
+import com.example.crypto_app.ui.theme.BackgroundDark
 import com.example.crypto_app.navigation.HomeRoute
 import com.example.crypto_app.navigation.PortfolioRoute
 import com.example.crypto_app.navigation.SettingsRoute
 import com.example.crypto_app.navigation.DetailRoute
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.collectAsState
+import com.example.crypto_app.data.PreferencesManager
 
 
 @ExperimentalMaterial3Api
@@ -46,11 +52,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CryptoappTheme {
+            val preferencesManager = PreferencesManager(this)
+            val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
+            
+            CryptoappTheme(darkTheme = isDarkTheme) {
                 val navController = rememberNavController()
+                val backgroundColor = if (isDarkTheme) BackgroundDark else BackgroundLight
                 
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(backgroundColor),
                     topBar = {
                         val currentBackStackEntry = navController.currentBackStackEntryAsState().value
                         TopAppBar(

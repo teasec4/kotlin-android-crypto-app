@@ -24,18 +24,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.crypto_app.data.model.CoinResponse
 import com.example.crypto_app.ui.component.CoinTile
+import com.example.crypto_app.ui.theme.Primary
+import com.example.crypto_app.ui.theme.PrimaryDark
 
 @Composable
 fun PortfolioScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(12.dp),
     ) {
         Card(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
+                .padding(bottom = 20.dp),
             shape = RoundedCornerShape(20.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -44,8 +46,8 @@ fun PortfolioScreen(modifier: Modifier = Modifier) {
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                Color(0xFF6200EE),
-                                Color(0xFF3700B3)
+                                Primary,
+                                PrimaryDark
                             )
                         )
                     )
@@ -103,13 +105,14 @@ fun PortfolioScreen(modifier: Modifier = Modifier) {
         }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 0.dp, vertical = 4.dp)
         ) {
             items(MockCoins) { coin ->
                 CoinTile(
                     coin = coin,
-                    onCoinClick = {}
+                    onCoinClick = {},
+                    modifier = Modifier.padding(horizontal = 0.dp, vertical = 6.dp)
                 )
             }
         }
