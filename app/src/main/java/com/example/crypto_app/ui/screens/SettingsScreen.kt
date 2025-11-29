@@ -35,7 +35,6 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .background(Color(0xFFF5F5F5))
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
