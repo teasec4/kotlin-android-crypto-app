@@ -10,12 +10,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed class HomeUiState {
-    object Loading : HomeUiState()
+    data object Loading : HomeUiState()
     data class Success(val coins: List<CoinResponse>) : HomeUiState()
     data class Error(val message: String) : HomeUiState()
 }
 
+/**
+ * ViewModel для главного экрана со списком крипто-валют.
+ * Управляет состоянием загрузки, успеха и ошибок.
+ */
 class HomeViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel() {
+    
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -26,11 +31,13 @@ class HomeViewModel(private val getCoinsUseCase: GetCoinsUseCase) : ViewModel() 
     private fun loadCoins() {
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
-            getCoinsUseCase().onSuccess { coins ->
-                _uiState.value = HomeUiState.Success(coins)
-            }.onFailure { error ->
-                _uiState.value = HomeUiState.Error(error.message ?: "Unknown error")
-            }
+            getCoinsUseCase()
+                .onSuccess { coins ->
+                    _uiState.value = HomeUiState.Success(coins)
+                }
+                .onFailure { error ->
+                    _uiState.value = HomeUiState.Error(error.message ?: "Unknown error")
+                }
         }
     }
 

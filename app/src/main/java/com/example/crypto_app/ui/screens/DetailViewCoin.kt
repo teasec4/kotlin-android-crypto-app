@@ -12,26 +12,27 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.crypto_app.data.PreferencesManager
-import com.example.crypto_app.di.ServiceLocator
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.crypto_app.di.LocalAppContainer
 import com.example.crypto_app.ui.theme.BackgroundDark
 import com.example.crypto_app.ui.theme.BackgroundLight
 import com.example.crypto_app.ui.theme.TextPrimaryDark
 import com.example.crypto_app.ui.theme.TextPrimaryLight
 import com.example.crypto_app.ui.viewmodel.HomeUiState
+import com.example.crypto_app.ui.viewmodel.HomeViewModel
 
 @Composable
 fun DetailViewCoin(coinId: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val preferencesManager = PreferencesManager(context)
-    val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
+    val appContainer = LocalAppContainer.current
+    val isDarkTheme = appContainer.preferencesManager.isDarkTheme.collectAsState(initial = false).value
     val backgroundColor = if (isDarkTheme) BackgroundDark else BackgroundLight
     val textColor = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
 
-    val homeViewModel = ServiceLocator.createHomeViewModel()
+    val homeViewModel: HomeViewModel = viewModel {
+        HomeViewModel(appContainer.getCoinsUseCase)
+    }
     val homeUiState = homeViewModel.uiState.collectAsState().value
 
     when (homeUiState) {

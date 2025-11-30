@@ -1,7 +1,6 @@
 package com.example.crypto_app.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,16 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.crypto_app.data.PreferencesManager
 import com.example.crypto_app.ui.theme.Primary
 import com.example.crypto_app.ui.theme.SurfaceLight
 import com.example.crypto_app.ui.theme.SurfaceDark
@@ -38,14 +33,19 @@ import com.example.crypto_app.ui.theme.TextPrimaryLight
 import com.example.crypto_app.ui.theme.TextSecondaryLight
 import com.example.crypto_app.ui.theme.TextPrimaryDark
 import com.example.crypto_app.ui.theme.TextSecondaryDark
+import com.example.crypto_app.ui.viewmodel.SettingsViewModel
 
+/**
+ * Экран настроек приложения.
+ * Управляется через SettingsViewModel для управления состоянием темы.
+ */
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val preferencesManager = PreferencesManager(context)
-    val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    modifier: Modifier = Modifier
+) {
+    val isDarkTheme = viewModel.isDarkTheme.collectAsState().value
     val notificationsEnabled = remember { mutableStateOf(true) }
-    val coroutineScope = rememberCoroutineScope()
     
     val surfaceColor = if (isDarkTheme) SurfaceDark else SurfaceLight
     val textPrimary = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
@@ -95,13 +95,13 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         )
 
         // Dark Theme
-        SettingItem(
-            icon = Icons.Default.Settings,
-            title = "Dark Theme",
-            isEnabled = isDarkTheme,
-            onToggle = { coroutineScope.launch { preferencesManager.setDarkTheme(it) } },
-            isDarkTheme = isDarkTheme
-        )
+         SettingItem(
+             icon = Icons.Default.Settings,
+             title = "Dark Theme",
+             isEnabled = isDarkTheme,
+             onToggle = { viewModel.setDarkTheme(it) },
+             isDarkTheme = isDarkTheme
+         )
 
         // About
         Column(

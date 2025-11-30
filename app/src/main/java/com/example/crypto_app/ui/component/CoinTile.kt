@@ -2,7 +2,6 @@ package com.example.crypto_app.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -13,15 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.crypto_app.data.model.CoinResponse
-import com.example.crypto_app.data.PreferencesManager
-import com.example.crypto_app.ui.theme.TextPrimary
-import com.example.crypto_app.ui.theme.TextSecondary
+import com.example.crypto_app.di.LocalAppContainer
 import com.example.crypto_app.ui.theme.SurfaceLight
 import com.example.crypto_app.ui.theme.SurfaceDarkCard
 import com.example.crypto_app.ui.theme.TextPrimaryLight
@@ -35,9 +31,8 @@ fun CoinTile(
     onCoinClick: (CoinResponse) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val preferencesManager = PreferencesManager(context)
-    val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
+    val appContainer = LocalAppContainer.current
+    val isDarkTheme = appContainer.preferencesManager.isDarkTheme.collectAsState(initial = false).value
     
     val symbol = coin.symbol.uppercase()
     val price = "$${coin.currentPrice?.let { "%.2f".format(it) } ?: "N/A"}"

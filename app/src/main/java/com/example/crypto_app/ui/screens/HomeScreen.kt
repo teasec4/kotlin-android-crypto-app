@@ -1,7 +1,6 @@
 package com.example.crypto_app.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,15 +31,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.crypto_app.data.model.CoinResponse
-import com.example.crypto_app.data.PreferencesManager
-import com.example.crypto_app.di.ServiceLocator
+import com.example.crypto_app.di.LocalAppContainer
 import com.example.crypto_app.ui.component.CoinTile
 import com.example.crypto_app.ui.viewmodel.HomeUiState
 import com.example.crypto_app.ui.viewmodel.HomeViewModel
@@ -59,14 +57,15 @@ import com.example.crypto_app.ui.theme.TextSecondaryDark
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
-    val viewModel: HomeViewModel = ServiceLocator.createHomeViewModel()
-    val uiState = viewModel.uiState.collectAsState().value
+    val appContainer = LocalAppContainer.current
+    val homeViewModel: HomeViewModel = viewModel {
+        HomeViewModel(appContainer.getCoinsUseCase)
+    }
+    val uiState = homeViewModel.uiState.collectAsState().value
     val selectedCoin = remember { mutableStateOf<CoinResponse?>(null) }
     val text = remember { mutableStateOf("") }
 
-    val context = LocalContext.current
-    val preferencesManager = PreferencesManager(context)
-    val isDarkTheme = preferencesManager.isDarkTheme.collectAsState(initial = false).value
+    val isDarkTheme = appContainer.preferencesManager.isDarkTheme.collectAsState(initial = false).value
 
     val pullState = rememberPullToRefreshState()
 
@@ -75,7 +74,7 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
         state = pullState,
         isRefreshing = uiState is HomeUiState.Loading,
         onRefresh = {
-            viewModel.refresh()
+            homeViewModel.refresh()
         }
     ) {
         when (uiState) {
@@ -125,7 +124,7 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
     // Bottom Sheet
     if (selectedCoin.value != null) {
         val inputAmount = text.value.toDoubleOrNull() ?: 0.0
-        val dollarValue = inputAmount * (selectedCoin.value?.currentPrice ?: 0.0)
+        val dollarValue = inputAmount * selectedCoin.value!!.getSafePrice()
         val sheetBgColor = if (isDarkTheme) SurfaceDark else Color.White
         val sheetTextPrimary = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
         val sheetTextSecondary = if (isDarkTheme) TextSecondaryDark else Color.Gray
