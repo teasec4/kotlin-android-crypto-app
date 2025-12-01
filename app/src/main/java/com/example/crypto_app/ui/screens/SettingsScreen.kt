@@ -39,6 +39,7 @@ import com.example.crypto_app.ui.theme.TextSecondaryLight
 import com.example.crypto_app.ui.theme.TextPrimaryDark
 import com.example.crypto_app.ui.theme.TextSecondaryDark
 import com.example.crypto_app.ui.viewmodel.SettingsViewModel
+import com.example.crypto_app.data.model.UserResponse
 
 /**
  * Экран настроек приложения.
@@ -48,6 +49,7 @@ import com.example.crypto_app.ui.viewmodel.SettingsViewModel
 fun SettingsScreen(
     viewModel: SettingsViewModel,
     onLogout: () -> Unit = {},
+    currentUser: UserResponse? = null,
     modifier: Modifier = Modifier
 ) {
     val isDarkTheme = viewModel.isDarkTheme.collectAsState().value
@@ -65,31 +67,31 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // Profile
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(surfaceColor, RoundedCornerShape(12.dp))
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = "Profile",
-                fontSize = 14.sp,
-                color = textSecondary,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = "John Crypto",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = textPrimary
-            )
-            Text(
-                text = "john.crypto@example.com",
-                fontSize = 14.sp,
-                color = textSecondary
-            )
-        }
+         Column(
+             modifier = Modifier
+                 .fillMaxWidth()
+                 .background(surfaceColor, RoundedCornerShape(12.dp))
+                 .padding(20.dp),
+             verticalArrangement = Arrangement.spacedBy(8.dp)
+         ) {
+             Text(
+                 text = "Profile",
+                 fontSize = 14.sp,
+                 color = textSecondary,
+                 fontWeight = FontWeight.SemiBold
+             )
+             Text(
+                 text = currentUser?.email ?: "User",
+                 fontSize = 24.sp,
+                 fontWeight = FontWeight.Bold,
+                 color = textPrimary
+             )
+             Text(
+                 text = "ID: ${currentUser?.id?.take(8) ?: "N/A"}",
+                 fontSize = 14.sp,
+                 color = textSecondary
+             )
+         }
 
         // Notifications
         SettingItem(

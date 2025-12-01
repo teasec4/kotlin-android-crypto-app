@@ -36,6 +36,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.crypto_app.di.AppContainer
+import com.example.crypto_app.data.model.UserResponse
 import com.example.crypto_app.ui.screens.DetailViewCoin
 import com.example.crypto_app.ui.screens.HomeScreen
 import com.example.crypto_app.ui.screens.LoginScreen
@@ -78,7 +79,7 @@ fun AppNavigation(appContainer: AppContainer) {
         }
         is AuthUiState.Success -> {
             if (authState.user != null) {
-                MainScreen(appContainer = appContainer, authViewModel = authViewModel)
+                MainScreen(appContainer = appContainer, authViewModel = authViewModel, currentUser = authState.user)
             } else {
                 UnauthenticatedNavHost(authViewModel = authViewModel)
             }
@@ -130,7 +131,8 @@ private fun UnauthenticatedNavHost(authViewModel: AuthViewModel) {
 @Composable
 fun MainScreen(
     appContainer: AppContainer,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    currentUser: UserResponse? = null
 ) {
     val settingsViewModel: SettingsViewModel = viewModel(factory = appContainer.viewModelFactory)
     val isDarkTheme = settingsViewModel.isDarkTheme.collectAsState().value
@@ -189,7 +191,8 @@ fun MainScreen(
                 composable<SettingsRoute> {
                     SettingsScreen(
                         settingsViewModel,
-                        onLogout = { authViewModel.logout() }
+                        onLogout = { authViewModel.logout() },
+                        currentUser = currentUser
                     )
                 }
                 composable<DetailRoute> { backStackEntry ->

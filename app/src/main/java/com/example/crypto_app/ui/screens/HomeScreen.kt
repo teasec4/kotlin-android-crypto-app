@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
@@ -174,70 +174,35 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
                     }
                 }
 
-                // Input field with border
-                TextField(
+                // Input field with conversion rate
+                OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .background(textFieldBgColor, shape = RoundedCornerShape(12.dp)),
+                        .padding(bottom = 24.dp),
                     value = text.value,
-                    placeholder = { Text("Enter amount", color = sheetTextSecondary.copy(alpha = 0.5f)) },
                     onValueChange = { newValue ->
                         if (newValue.isEmpty() || newValue.toDoubleOrNull() != null) {
                             text.value = newValue
                         }
                     },
-                    singleLine = true,
-                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 16.sp, color = sheetTextPrimary)
-                )
-
-                // Conversion info - always visible, no layout shifts
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp)
-                        .background(
-                            color = if (text.value.isNotEmpty()) Primary.copy(alpha = 0.08f) else Color.Transparent,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (text.value.isEmpty()) {
-                        Text(
-                            text = "Enter amount to see conversion",
-                            fontSize = 14.sp,
-                            color = sheetTextSecondary.copy(alpha = 0.5f)
-                        )
-                    } else {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "${text.value} ${selectedCoin.value?.symbol?.uppercase()}",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = sheetTextPrimary
-                            )
-
-                            Text(
-                                text = "→",
-                                fontSize = 16.sp,
-                                color = Primary,
-                                modifier = Modifier.padding(horizontal = 12.dp)
-                            )
-
-                            Text(
-                                text = "$${String.format("%.2f", dollarValue)}",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Secondary
-                            )
+                    label = {
+                        if (text.value.isEmpty()) {
+                            Text("Enter amount")
+                        } else {
+                            Text("= $${String.format("%.2f", dollarValue)}")
                         }
-                    }
-                }
+                    },
+                    suffix = {
+                        Text(
+                            text = selectedCoin.value?.symbol?.uppercase() ?: "",
+                            fontSize = 14.sp,
+                            color = sheetTextSecondary
+                        )
+                    },
+                    singleLine = true,
+                    textStyle = androidx.compose.ui.text.TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold, color = sheetTextPrimary),
+                    shape = RoundedCornerShape(12.dp)
+                )
 
                 TextButton(
                     onClick = { selectedCoin.value = null; text.value = "" },
