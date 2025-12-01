@@ -58,9 +58,7 @@ import com.example.crypto_app.ui.theme.TextSecondaryDark
 @Composable
 fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
     val appContainer = LocalAppContainer.current
-    val homeViewModel: HomeViewModel = viewModel {
-        HomeViewModel(appContainer.getCoinsUseCase)
-    }
+    val homeViewModel: HomeViewModel = viewModel(factory = appContainer.viewModelFactory)
     val uiState = homeViewModel.uiState.collectAsState().value
     val selectedCoin = remember { mutableStateOf<CoinResponse?>(null) }
     val text = remember { mutableStateOf("") }

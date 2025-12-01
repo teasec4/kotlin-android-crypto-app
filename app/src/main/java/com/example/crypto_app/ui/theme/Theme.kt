@@ -40,10 +40,13 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun CryptoappTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean? = null,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) {
+    val systemDarkTheme = isSystemInDarkTheme()
+    val effectiveDarkTheme = darkTheme ?: systemDarkTheme
+    
+    val colorScheme = if (effectiveDarkTheme) {
         DarkColorScheme
     } else {
         LightColorScheme
@@ -54,7 +57,7 @@ fun CryptoappTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window?.statusBarColor = colorScheme.surface.toArgb()
-            WindowCompat.getInsetsController(window, view)?.isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view)?.isAppearanceLightStatusBars = !effectiveDarkTheme
         }
     }
 

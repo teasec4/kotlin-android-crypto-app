@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Ktor
+-keep class io.ktor.** { *; }
+-keep class io.github.jan.supabase.** { *; }
+-keep class kotlinx.serialization.** { *; }
+
+# Keep all classes in our package
+-keep class com.example.crypto_app.** { *; }
