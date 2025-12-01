@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -92,12 +93,16 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            enabled = authState !is AuthUiState.Loading
+            enabled = authState !is AuthUiState.Loading,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                contentColor = androidx.compose.ui.graphics.Color.White
+            )
         ) {
             if (authState is AuthUiState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.padding(4.dp))
+                CircularProgressIndicator(modifier = Modifier.padding(4.dp), color = androidx.compose.ui.graphics.Color.White)
             } else {
-                Text("Login")
+                Text("Login", color = androidx.compose.ui.graphics.Color.White)
             }
         }
 
