@@ -29,7 +29,25 @@ class AuthViewModel(
     val uiStateAuth: StateFlow<AuthUiState> = _uiStateAuth.asStateFlow()
 
     init {
-        getCurrentUser()
+        checkCurrentUser()
+    }
+
+    private fun checkCurrentUser() {
+        viewModelScope.launch {
+            try {
+                val result = getCurrentUserUseCase()
+                result
+                    .onSuccess { user ->
+                        _uiStateAuth.value = AuthUiState.Success(user)
+                    }
+                    .onFailure { error ->
+                        // Если нет текущего пользователя, показываем экран входа
+                        _uiStateAuth.value = AuthUiState.Success(null)
+                    }
+            } catch (e: Exception) {
+                _uiStateAuth.value = AuthUiState.Success(null)
+            }
+        }
     }
 
     fun login(email: String, password: String) {
@@ -63,18 +81,6 @@ class AuthViewModel(
             logoutUseCase()
                 .onSuccess {
                     _uiStateAuth.value = AuthUiState.Success(null)
-                }
-                .onFailure { error ->
-                    _uiStateAuth.value = AuthUiState.Error(error.message ?: "Unknown error")
-                }
-        }
-    }
-
-    private fun getCurrentUser() {
-        viewModelScope.launch {
-            getCurrentUserUseCase()
-                .onSuccess { user ->
-                    _uiStateAuth.value = AuthUiState.Success(user)
                 }
                 .onFailure { error ->
                     _uiStateAuth.value = AuthUiState.Error(error.message ?: "Unknown error")

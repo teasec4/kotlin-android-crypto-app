@@ -42,7 +42,7 @@ class AppContainer(private val context: Context) {
     }
 
     // SUPABASE_URL=https://bucuwdkctsufqxgspoqw.supabase.co
-    //SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1Y3V3ZGtjdHN1ZnF4Z3Nwb3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyNzc3MjUsImV4cCI6MjA3ODg1MzcyNX0.ynPRHsCLH9bvUIwkFRjRZX5ad6ntQwAdvbkJNMyhHaA
+    //SUPABASE_ANON_KEY=[REDACTED:jwt-token]
     // ========== Supabase Auth ==========
     private val supabaseClient by lazy {
         createSupabaseClient(

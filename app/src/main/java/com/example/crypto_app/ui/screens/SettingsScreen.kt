@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +15,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -42,6 +47,7 @@ import com.example.crypto_app.ui.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    onLogout: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isDarkTheme = viewModel.isDarkTheme.collectAsState().value
@@ -125,6 +131,27 @@ fun SettingsScreen(
                 Text("Version", fontSize = 16.sp, color = textPrimary)
                 Text("1.0.0", fontSize = 16.sp, color = textSecondary)
             }
+        }
+
+        // Logout Button
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = onLogout,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFB3261E)
+            )
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ExitToApp,
+                contentDescription = "Logout",
+                modifier = Modifier.padding(end = 8.dp),
+                tint = Color.White
+            )
+            Text("Logout", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
         }
     }
 }

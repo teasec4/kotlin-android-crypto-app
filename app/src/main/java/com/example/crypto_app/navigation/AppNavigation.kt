@@ -58,12 +58,15 @@ import com.example.crypto_app.ui.viewmodel.SettingsViewModel
 fun AppNavigation(appContainer: AppContainer) {
     val authViewModel: AuthViewModel = viewModel(factory = appContainer.viewModelFactory)
     val authState = authViewModel.uiStateAuth.collectAsState().value
+    val isDarkTheme = appContainer.preferencesManager.isDarkTheme.collectAsState(initial = false).value
+    val backgroundColor = if (isDarkTheme) BackgroundDark else BackgroundLight
+    val textColor = if (isDarkTheme) TextPrimaryDark else TextPrimaryLight
 
     when (authState) {
         is AuthUiState.Loading -> {
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = BackgroundDark
+                color = backgroundColor
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -84,13 +87,13 @@ fun AppNavigation(appContainer: AppContainer) {
             // TODO: Show a proper error screen
             Surface(
                 modifier = Modifier.fillMaxSize(),
-                color = BackgroundDark
+                color = backgroundColor
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    Text(text = authState.message, color = TextPrimaryDark)
+                    Text(text = authState.message, color = textColor)
                 }
             }
         }
@@ -184,7 +187,10 @@ fun MainScreen(
                     PortfolioScreen()
                 }
                 composable<SettingsRoute> {
-                    SettingsScreen(settingsViewModel)
+                    SettingsScreen(
+                        settingsViewModel,
+                        onLogout = { authViewModel.logout() }
+                    )
                 }
                 composable<DetailRoute> { backStackEntry ->
                     val detailRoute = backStackEntry.toRoute<DetailRoute>()
@@ -239,22 +245,11 @@ fun BottomNavigation(
         ) {
             Icon(Icons.Default.Settings, contentDescription = "Settings", tint = tint)
         }
-        IconButton(
-            onClick = {
-                authViewModel.logout()
-            }
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ExitToApp,
-                contentDescription = "Logout",
-                tint = tint
-            )
         }
-    }
-}
+        }
 
-@Composable
-fun getScreenTitle(navController: NavController): String {
+        @Composable
+        fun getScreenTitle(navController: NavController): String {
     val navBackStackEntry = navController.currentBackStackEntryAsState().value
     val route = navBackStackEntry?.destination?.route ?: return "Crypto App"
 
