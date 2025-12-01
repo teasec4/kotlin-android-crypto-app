@@ -44,13 +44,19 @@ class SupabaseAuthService(private val auth: Auth) {
     }
 
     suspend fun currentUser(): UserResponse? {
-        val user = auth.currentUserOrNull()
-        return if (user != null) {
-            UserResponse(
-                id = user.id,
-                email = user.email ?: "",
-            )
-        } else {
+        return try {
+            // Даем время на восстановление сессии
+            kotlinx.coroutines.delay(500)
+            val user = auth.currentUserOrNull()
+            if (user != null) {
+                UserResponse(
+                    id = user.id,
+                    email = user.email ?: "",
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
             null
         }
     }
