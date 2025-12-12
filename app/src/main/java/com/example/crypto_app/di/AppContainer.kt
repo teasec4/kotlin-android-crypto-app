@@ -41,8 +41,6 @@ class AppContainer(private val context: Context) {
         PreferencesManager(dataStore)
     }
 
-    // SUPABASE_URL=https://bucuwdkctsufqxgspoqw.supabase.co
-    //SUPABASE_ANON_KEY=[REDACTED:jwt-token]
     // ========== Supabase Auth ==========
     private val supabaseClient by lazy {
         createSupabaseClient(

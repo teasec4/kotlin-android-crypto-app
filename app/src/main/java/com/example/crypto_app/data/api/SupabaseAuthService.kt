@@ -45,7 +45,7 @@ class SupabaseAuthService(private val auth: Auth) {
 
     suspend fun currentUser(): UserResponse? {
         return try {
-            // Даем время на восстановление сессии
+            // need delay to response from supabase
             kotlinx.coroutines.delay(500)
             val user = auth.currentUserOrNull()
             if (user != null) {

@@ -2,10 +2,6 @@ package com.example.crypto_app.data.model
 
 import com.google.gson.annotations.SerializedName
 
-/**
- * Модель ответа от CoinGecko API.
- * Nullable значения обрабатываются с дефолтными значениями для безопасности.
- */
 data class CoinResponse(
     val id: String,
     val symbol: String,
@@ -18,13 +14,6 @@ data class CoinResponse(
     @SerializedName("market_cap_rank")
     val marketCapRank: Int? = null
 ) {
-    /**
-     * Безопасное получение цены с дефолтным значением.
-     */
     fun getSafePrice(): Double = currentPrice ?: 0.0
-
-    /**
-     * Безопасное получение изменения цены за 24 часа.
-     */
     fun getSafePriceChange24h(): Double = priceChange24h ?: 0.0
 }

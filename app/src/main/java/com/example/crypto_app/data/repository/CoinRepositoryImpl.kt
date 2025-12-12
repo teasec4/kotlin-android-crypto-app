@@ -6,17 +6,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.concurrent.TimeoutException
-
-/**
- * Реализация CoinRepository с обработкой различных типов ошибок.
- */
 class CoinRepositoryImpl(private val coinGeckoService: CoinGeckoService) : CoinRepository {
-    
     override suspend fun getCoins(): Result<List<CoinResponse>> {
         return withContext(Dispatchers.IO) {
             try {
                 val coins = coinGeckoService.getCoins()
-                
                 // Проверяем, что список не пустой
                 if (coins.isEmpty()) {
                     Result.failure(Exception("Empty response from API"))
