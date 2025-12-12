@@ -1,21 +1,26 @@
 package com.example.crypto_app.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-@Serializable
-object LoginRoute
 
 @Serializable
-object RegisterRoute
+sealed interface Route: NavKey{
+    @Serializable
+    data object LoginRoute: Route, NavKey
 
-@Serializable
-object HomeRoute
+    @Serializable
+    data object RegisterRoute: Route, NavKey
 
-@Serializable
-object PortfolioRoute
+    @Serializable
+    data object HomeRoute: Route, NavKey
 
-@Serializable
-object SettingsRoute
+    @Serializable
+    data object PortfolioRoute: Route, NavKey
 
-@Serializable
-data class DetailRoute(val coinId: String, val coinName: String = "")
+    @Serializable
+    data object SettingsRoute: Route, NavKey
+}
+
+
+

@@ -75,6 +75,8 @@ dependencies {
     // Retrofit — если ещё нужен
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
 
     // Тесты
     testImplementation(libs.junit)

@@ -9,7 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import com.example.crypto_app.di.AppContainer
 import com.example.crypto_app.di.LocalAppContainer
-import com.example.crypto_app.navigation.AppNavigation
+import com.example.crypto_app.navigation.RootScreen
 import com.example.crypto_app.ui.theme.CryptoappTheme
 
 @ExperimentalMaterial3Api
@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalAppContainer provides appContainer
                 ) {
-                    AppNavigation(appContainer = appContainer)
+                    RootScreen(appContainer = appContainer)
                 }
             }
         }

@@ -34,8 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.crypto_app.data.model.CoinResponse
 import com.example.crypto_app.di.LocalAppContainer
@@ -56,10 +54,13 @@ import com.example.crypto_app.ui.theme.TextSecondaryDark
 
 @ExperimentalMaterial3Api
 @Composable
-fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    modifier: Modifier = Modifier,
+    onNavigateToDetail: (String, String) -> Unit = { _, _ -> }
+) {
     val appContainer = LocalAppContainer.current
-    val homeViewModel: HomeViewModel = viewModel(factory = appContainer.viewModelFactory)
-    val uiState = homeViewModel.uiState.collectAsState().value
+    val uiState = viewModel.uiState.collectAsState().value
     val selectedCoin = remember { mutableStateOf<CoinResponse?>(null) }
     val text = remember { mutableStateOf("") }
 
@@ -72,7 +73,7 @@ fun HomeScreen(navController: NavController?, modifier: Modifier = Modifier) {
         state = pullState,
         isRefreshing = uiState is HomeUiState.Loading,
         onRefresh = {
-            homeViewModel.refresh()
+            viewModel.refresh()
         }
     ) {
         when (uiState) {
