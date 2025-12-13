@@ -57,7 +57,6 @@ import com.example.crypto_app.ui.theme.TextSecondaryDark
 fun HomeScreen(
     viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
-    onNavigateToDetail: (String, String) -> Unit = { _, _ -> }
 ) {
     val appContainer = LocalAppContainer.current
     val uiState = viewModel.uiState.collectAsState().value

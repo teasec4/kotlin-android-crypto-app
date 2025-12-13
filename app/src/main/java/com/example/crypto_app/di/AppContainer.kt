@@ -12,11 +12,7 @@ import com.example.crypto_app.data.repository.AuthRepository
 import com.example.crypto_app.data.repository.CoinRepository
 import com.example.crypto_app.data.repository.CoinRepositoryImpl
 import com.example.crypto_app.domain.usecase.GetCoinsUseCase
-import com.example.crypto_app.domain.usecase.GetCurrentUserUseCase
-import com.example.crypto_app.domain.usecase.LoginUseCase
-import com.example.crypto_app.domain.usecase.LogoutUseCase
-import com.example.crypto_app.domain.usecase.RegisterUseCase
-import com.example.crypto_app.di.ViewModelFactory
+import com.example.crypto_app.domain.usecase.AuthUseCase
 import io.github.jan.supabase.createSupabaseClient
 
 import io.github.jan.supabase.auth.Auth
@@ -85,20 +81,8 @@ class AppContainer(private val context: Context) {
         GetCoinsUseCase(coinRepository)
     }
 
-    val loginUseCase: LoginUseCase by lazy {
-        LoginUseCase(authRepository)
-    }
-
-    val registerUseCase: RegisterUseCase by lazy {
-        RegisterUseCase(authRepository)
-    }
-
-    val logoutUseCase: LogoutUseCase by lazy {
-        LogoutUseCase(authRepository)
-    }
-
-    val getCurrentUserUseCase: GetCurrentUserUseCase by lazy {
-        GetCurrentUserUseCase(authRepository)
+    val authUseCase: AuthUseCase by lazy {
+        AuthUseCase(authRepository)
     }
 
     // ========== ViewModel Factory ==========

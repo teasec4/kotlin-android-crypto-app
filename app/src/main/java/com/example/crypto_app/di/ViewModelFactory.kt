@@ -15,10 +15,7 @@ class ViewModelFactory(private val appContainer: AppContainer) : ViewModelProvid
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return AuthViewModel(
-                appContainer.loginUseCase,
-                appContainer.registerUseCase,
-                appContainer.logoutUseCase,
-                appContainer.getCurrentUserUseCase
+                appContainer.authUseCase
             ) as T
         }
         if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {

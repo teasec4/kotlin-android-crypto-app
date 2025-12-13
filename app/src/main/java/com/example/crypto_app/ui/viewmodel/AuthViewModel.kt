@@ -3,10 +3,7 @@ package com.example.crypto_app.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.crypto_app.data.model.UserResponse
-import com.example.crypto_app.domain.usecase.GetCurrentUserUseCase
-import com.example.crypto_app.domain.usecase.LoginUseCase
-import com.example.crypto_app.domain.usecase.LogoutUseCase
-import com.example.crypto_app.domain.usecase.RegisterUseCase
+import com.example.crypto_app.domain.usecase.AuthUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,10 +16,7 @@ sealed class AuthUiState {
 }
 
 class AuthViewModel(
-    private val loginUseCase: LoginUseCase,
-    private val registerUseCase: RegisterUseCase,
-    private val logoutUseCase: LogoutUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val authUseCase: AuthUseCase
 ) : ViewModel() {
 
     private val _uiStateAuth = MutableStateFlow<AuthUiState>(AuthUiState.Loading)
@@ -35,7 +29,7 @@ class AuthViewModel(
     private fun checkCurrentUser() {
         viewModelScope.launch {
             try {
-                val result = getCurrentUserUseCase()
+                val result = authUseCase.getCurrentUser()
                 result
                     .onSuccess { user ->
                         _uiStateAuth.value = AuthUiState.Success(user)
@@ -53,7 +47,7 @@ class AuthViewModel(
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _uiStateAuth.value = AuthUiState.Loading
-            loginUseCase(email, password)
+            authUseCase.login(email, password)
                 .onSuccess { user ->
                     _uiStateAuth.value = AuthUiState.Success(user)
                 }
@@ -66,7 +60,7 @@ class AuthViewModel(
     fun register(email: String, password: String) {
         viewModelScope.launch {
             _uiStateAuth.value = AuthUiState.Loading
-            registerUseCase(email, password)
+            authUseCase.register(email, password)
                 .onSuccess { user ->
                     _uiStateAuth.value = AuthUiState.Success(user)
                 }
@@ -78,7 +72,7 @@ class AuthViewModel(
 
     fun logout() {
         viewModelScope.launch {
-            logoutUseCase()
+            authUseCase.logout()
                 .onSuccess {
                     _uiStateAuth.value = AuthUiState.Success(null)
                 }
